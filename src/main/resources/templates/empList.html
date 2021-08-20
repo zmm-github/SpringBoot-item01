@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>员工列表</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.4.0/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/3.4.0/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4">
+            <h1>SpringBoot-CRUD</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <button type="button" class="btn btn-primary" id="emp_add_btn">新增</button>
+            <button type="button" class="btn btn-danger" id="emp_batch_delete_btn">删除</button>
+        </div>
+        <div class="col-sm-4 col-sm-offset-2">
+            <div class="input-group">
+                <input type="text" class="form-control" name="like_search" id="like_search_input" placeholder="请输入员工姓名进行模糊查询">
+                <span class="input-group-btn">
+                    <button href="#" class="btn btn-primary" id="like_search_btn"><span
+                            class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" name="ids" id="checked_emp_all"/>
+                    </th>
+                    <th>empId</th>
+                    <th>empName</th>
+                    <th>gender</th>
+                    <th>email</th>
+                    <th>deptName</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6" id="pagingInfo">
+            <!--<p>当前页,总页,总条记录</p>-->
+        </div>
+        <div class="col-sm-6">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<!--员工新增模态框-->
+<div class="modal fade" id="EmpAddModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">员工新增</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">empName</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="empName" id="emp_add_empName_input"
+                                   placeholder="Username" required>
+                            <span id="add_empName_tip" class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">gender</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" checked id="add_emp_male" value="男"><label
+                                    for="add_emp_male">男</label>
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="add_emp_female" value="女"><label
+                                    for="add_emp_female">女</label>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" name="email" placeholder="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">deptName</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="dId">
+
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="emp_add_save_btn">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!--员工修改模态框-->
+<div class="modal fade" id="EmpUpdateModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">员工修改</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">empName</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="empName" id="emp_update_empName_input"
+                                   placeholder="Username" required>
+                            <span id="update_empName_tip" class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">gender</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" checked id="update_emp_male" value="男"><label
+                                    for="update_emp_male">男</label>
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="update_emp_female" value="女"><label
+                                    for="update_emp_female">女</label>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" name="email" id="update_emp_email"
+                                   placeholder="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">deptName</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="dId">
+
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="emp_edit_update_btn">修改</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script type="text/javascript">
+    //定义如下全局变量
+    var last_page; //用于放页面最后一页
+    var current_page; //用于放页面当前页
+    var num; //定义一个常量，1、代表调用to_page()方法；2、代表调用like_search_to_page()方法
+    var likeEmpName;
+
+    $(function () {
+        to_page(1);
+    })
+
+    //去哪一页
+    function to_page(pn) {
+        //为常量赋值
+        num = 1;
+        $.ajax({
+            url: "selectEmpWithDept/" + pn,
+            type: "GET",
+            success: function (pageInfo) {
+                //1、构建员工表
+                build_emp_table(pageInfo);
+                //2、构建分页信息
+                build_paging_info(pageInfo);
+                //3、构建分页条
+                build_paging_bar(pageInfo);
+            }
+        })
+    }
+
+    //构建员工表
+    function build_emp_table(pageInfo) {
+        var tbodyEle = $("tbody");
+        //在构建前，先将里面的内容清空
+        tbodyEle.empty();
+        $.each(pageInfo.list, function (index, emp) {
+            var trEle = $("<tr></tr>");
+            var checkboxEle = $("<td></td>").append($("<input/>").attr("type", "checkbox").attr("name", "id").attr("value", emp.empId).addClass("check_item"));
+            var empIdEle = $("<td></td>").append([[emp.empId]]);
+            var empNameEle = $("<td></td>").append([[emp.empName]]);
+            var genderEle = $("<td></td>").append([[emp.gender]]);
+            var emailEle = $("<td></td>").append([[emp.email]]);
+            var deptNameEle = $("<td></td>").append([[emp.department.deptName]]);
+            var editBtnEle = $("<button></button>").addClass("btn btn-primary btn-sm").append("编辑");
+            var deleteBtnEle = $("<button></button>").addClass("btn btn-danger btn-sm").append("删除");
+            //为这两个按钮添加点击事件
+            editBtnEle.click(function () {
+                update_emp(emp.empId);
+            })
+            deleteBtnEle.click(function () {
+                delete_emp(emp.empId);
+            })
+            var btnEle = $("<td></td>").append(editBtnEle).append(" ").append(deleteBtnEle);
+            trEle.append(checkboxEle)
+                .append(empIdEle)
+                .append(empNameEle)
+                .append(genderEle)
+                .append(emailEle)
+                .append(deptNameEle)
+                .append(btnEle);
+            tbodyEle.append(trEle);
+        })
+    }
+
+    //构建分页信息
+    function build_paging_info(pageInfo) {
+        //在构建前，先将里面的内容清空
+        $("#pagingInfo").empty();
+        var pagingInfoEle = $("<p></p>").append("当前第" + pageInfo.pageNum + "页，总" + pageInfo.pages + "页，总" + pageInfo.total + "条记录");
+        //将分页信息添加到指定位置
+        pagingInfoEle.appendTo($("#pagingInfo"));
+    }
+
+    //构建分页条
+    function build_paging_bar(pageInfo) {
+        //将pageInfo中的总页数赋值给全局变量last_page
+        last_page = pageInfo.pages;
+        //将pageInfo中的当前页赋值给全局变量current_page
+        current_page = pageInfo.pageNum;
+        var ulEle = $("nav ul");
+        //在构建前，先将里面的内容清空
+        ulEle.empty();
+        //定义元素
+        var firstPageEle = $("<li></li>").append($("<a></a>").attr("href", "javascript:void(false);").append($("<span></span>").append("首页")));
+        var prePageEle = $("<li></li>").append($("<a></a>").attr("href", "javascript:void(false);").append($("<span></span>").append("&laquo;")));
+        //进行判断，判断当前页是否是第一页，如果是第一页，则第一页和上一页将禁用，切不为该元素添加点击事件
+        if (pageInfo.isFirstPage) {
+            firstPageEle.addClass("disabled");
+            prePageEle.addClass("disabled");
+        } else {
+            //为元素添加点击事件
+            firstPageEle.click(function () {
+                if (num == 1) {
+                    to_page(1);
+                } else {
+                    like_search_to_page(1, likeEmpName);
+                }
+            })
+            prePageEle.click(function () {
+                if (num == 1) {
+                    to_page(pageInfo.pageNum - 1);
+                } else {
+                    like_search_to_page(pageInfo.pageNum - 1, likeEmpName);
+                }
+
+            })
+        }
+        ulEle.append(firstPageEle).append(prePageEle);
+        $.each(pageInfo.navigatepageNums, function (index, page_num) {
+            var numLiEle = $("<li></li>").append($("<a></a>").attr("href", "javascript:void(false);").append(page_num));
+            numLiEle.click(function () {
+                $(this).addClass("active").siblings("li").removeClass("active");
+                if (num == 1) {
+                    to_page(page_num);
+                } else {
+                    like_search_to_page(page_num, likeEmpName);
+                }
+            })
+
+            if (pageInfo.pageNum == page_num) {
+                numLiEle.addClass("active");
+            }
+            ulEle.append(numLiEle);
+        })
+        //定义元素
+        var nextPageEle = $("<li></li>").append($("<a></a>").attr("href", "javascript:void(false);").append($("<span></span>").append("&raquo;")));
+        var lastPageEle = $("<li></li>").append($("<a></a>").attr("href", "javascript:void(false);").append($("<span></span>").append("末页")));
+        //进行判断，判断当前页是否是最后一页，如果是最后一页，则下一页和最后一页将禁用，切不为该元素添加点击事件
+        if (pageInfo.isLastPage) {
+            nextPageEle.addClass("disabled");
+            lastPageEle.addClass("disabled");
+        } else {
+            //为元素添加点击事件
+            nextPageEle.click(function () {
+                if (num == 1) {
+                    to_page(pageInfo.pageNum + 1);
+                } else {
+                    like_search_to_page(pageInfo.pageNum + 1, likeEmpName);
+                }
+            })
+            lastPageEle.click(function () {
+                if (num == 1) {
+                    to_page(pageInfo.pages);
+                } else {
+                    like_search_to_page(pageInfo.pages, likeEmpName);
+                }
+            })
+        }
+        ulEle.append(nextPageEle).append(lastPageEle);
+    }
+
+    //查询所有部门信息
+    function selectDept() {
+        $.ajax({
+            url: "dept",
+            type: "GET",
+            success: function (depts) {
+                //将部门信息放入模态框中
+                $.each(depts, function (index, dept) {
+                    var optionEle = $("<option></option>").attr("value", dept.deptId).append(dept.deptName);
+                    optionEle.appendTo($("select"));
+                })
+            }
+        })
+    }
+
+    //点击员工新增按钮
+    $("#emp_add_btn").click(function () {
+        //1、初始化新增表单，即重置表单
+        $("#EmpAddModal form")[0].reset();
+        $("#add_empName_tip").empty();
+        //注意重置表单只能重置表单中的内容，而不能重置表单中的样式，所以我们需要单独对表单中的样式进行重置
+        //2、重置表单的样式
+        $("#add_empName_tip").parent("div").removeClass("has-error has-warning has-success");
+        //3、清空select
+        $("#EmpAddModal select").empty();
+        //4、查询所有部门信息，将查询出来的部门信息放入模态框中
+        selectDept();
+        //5、打开模态框
+        $("#EmpAddModal").modal({
+            backdrop: 'static'
+        });
+    })
+
+    //后端校验；查询所有员工不带部门
+    function checkEmpName(spanEle, empName) {
+        $.ajax({
+            url: "emp",
+            type: "GET",
+            data: "empName=" + empName,
+            success: function (msg) {
+                //每次开始校验的时候都需要把里面的内容清空
+                spanEle.empty();
+                spanEle.append(msg);
+                if ("恭喜！该员工名可以注册/修改。" == msg) {
+                    spanEle.parent("div").removeClass("has-warning has-error").addClass("has-success");
+                } else {
+                    spanEle.parent("div").removeClass("has-warning has-success").addClass("has-error");
+                }
+            }
+        })
+    }
+
+    //当员工新增员工名输入框失去焦点时，进行后端校验
+    $("#emp_add_empName_input").blur(function () {
+        //1、获取员工名输入框中的值
+        var empName = $(this).val();
+        //2、获取添加员工提示元素
+        var addSpanEle = $("#add_empName_tip");
+        //3、发送Ajax请求，进行后端校验，校验该用户名是否存在
+        checkEmpName(addSpanEle, empName);
+
+    })
+
+    //添加员工
+    function insertEmp(empData) {
+        $.ajax({
+            url: "emp",
+            type: "POST",
+            data: empData,
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+
+    //点击员工新增保存按钮
+    $("#emp_add_save_btn").click(function () {
+        //1、进行判断是否能够添加，如果员工名为空或者已存在，则不能进行添加
+        if ($("#add_empName_tip").parent("div").hasClass("has-error")) {
+            return;
+        } else {
+            //2、表单序列化，获取表单中输入的值
+            var empData = $("#EmpAddModal form").serialize();
+            //3、发送Ajax请求，添加员工
+            insertEmp(empData);
+            //4、关闭模态框
+            $("#EmpAddModal").modal('hide');
+            //5、跳转到最后一页
+            to_page(last_page);
+        }
+
+    })
+
+    //当员工修改员工名输入框失去焦点时，进行后端校验
+    $("#emp_update_empName_input").blur(function () {
+        //1、获取员工名输入框中value属性的值
+        var empNameValue = $(this).attr("value");
+        //2、获取员工名输入框中的值
+        var empName = $(this).val();
+        //进行判断
+        if (empNameValue == empName) {
+            //清除员工修改模态框中的内容和样式
+            $("#update_empName_tip").empty();
+            $("#update_empName_tip").parent("div").removeClass("has-error has-warning has-success");
+            return;
+        } else {
+            //3、获取员工编辑提示元素
+            var editSpanEle = $("#update_empName_tip");
+            //4、发送Ajax请求，进行后端校验，校验该用户名是否存在
+            checkEmpName(editSpanEle, empName);
+        }
+    });
+
+    //查询指定员工信息带部门
+    function selectEmpById(empId) {
+        $.ajax({
+            url: "emp/" + empId,
+            type: "GET",
+            success: function (emp) {
+                //给员工修改模态框赋值
+                $("#emp_update_empName_input").attr("value", emp.empName);
+                //选中当前员工的性别
+                $("#EmpUpdateModal input[name = 'gender']").val([emp.gender]);
+                $("#update_emp_email").val(emp.email);
+                //使select选中当前员工所在的部门的option
+                $("#EmpUpdateModal select").val([emp.dId]);
+            }
+        })
+    }
+
+    //点击员工编辑按钮，调用此方法
+    function update_emp(empId) {
+        //清除员工修改模态框中的内容和样式
+        $("#update_empName_tip").empty();
+        $("#update_empName_tip").parent("div").removeClass("has-error has-warning has-success");
+        //1、将员工id存储到emp_edit_update_btn的value中，以便后面使用
+        $("#emp_edit_update_btn").attr("value", empId);
+        //2、查询所有部门信息，将部门信息填入模态框
+        selectDept();
+        //3、查询该员工信息，带部门，并将信息填入模态框
+        selectEmpById(empId);
+        //4、打开员工修改模态框
+        $("#EmpUpdateModal").modal({
+            backdrop: 'static'
+        })
+    }
+
+    //修改员工
+    function updateEmp(empId, empData) {
+        $.ajax({
+            url: "emp",
+            type: "PUT",
+            data: empData + "&empId=" + empId,
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+
+    //点击员工编辑修改按钮
+    $("#emp_edit_update_btn").click(function () {
+        //1、进行判断是否能够修改，如果员工名为空或者已存在，则不能进行修改
+        if ($("#update_empName_tip").parent("div").hasClass("has-error")) {
+            return;
+        } else {
+            //2、表单序列化，获取表单中输入的值
+            var empData = $("#EmpUpdateModal form").serialize();
+            //3、获取该员工的id值
+            var empId = $(this).attr("value");
+            //3、发送Ajax请求，修改员工
+            updateEmp(empId, empData);
+            //4、关闭模态框
+            $("#EmpUpdateModal").modal('hide');
+            //5、跳转到当前页
+            to_page(current_page);
+            to_page(current_page);
+        }
+    })
+
+    //员工删除
+    function deleteEmpById(empId) {
+        $.ajax({
+            url: "emp/" + empId,
+            type: "DELETE",
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+
+    //点击删除指定员工按钮，调用此方法
+    function delete_emp(empId) {
+        //1、调用Ajax，删除指定员工
+        deleteEmpById(empId);
+        //2、跳转到当前页
+        to_page(current_page);
+    }
+
+    function batch_delete_emp(ids) {
+        $.ajax({
+            url: "batchDeleteEmp/" + ids,
+            type: "DELETE",
+            success: function (result) {
+                alert(result);
+            }
+        })
+    }
+
+    //点击员工批量删除按钮$(".check_item:checked").length
+    $("#emp_batch_delete_btn").click(function () {
+        //1、获取选中的多选框对应的员工名的值，用字符串进行拼接，并且以逗号分隔
+        var empNames = "";
+
+        $.each($(".check_item:checked"), function () {
+            empNames += $(this).parents("tr").children("td:eq(2)").text() + ",";
+        })
+        //最后尾部会多出一个逗号，所以我们需要去除尾部的逗号
+        empNames = empNames.substring(0, empNames.length - 1);
+        //2、获取选中的多选框中的值，用字符串进行拼接，并且以逗号分隔
+        var ids = "";
+        $.each($(".check_item:checked"), function () {
+            ids += $(this).val() + ",";
+        })
+        //最后尾部会多出一个逗号，所以我们需要去除尾部的逗号
+        ids = ids.substring(0, ids.length - 1);
+        //3、进行判断，是否需要这些删除员工，如果是，则发送Ajax请求进行删除，如果否，则不做任何处理
+        if (confirm("您确定要删除员工【" + empNames + "】吗?")) {
+            //4、发送Ajax请求，删除员工
+            batch_delete_emp(ids)
+            //5、跳转到当前页
+            to_page(current_page);
+        } else {
+            return;
+        }
+    })
+
+    //模糊查询去哪一页
+    function like_search_to_page(pn, likeEmpName) {
+        //为常量赋值
+        num = 2;
+        $.ajax({
+            url: "likeSearchEmpWithDept/" + likeEmpName,
+            type: "GET",
+            data: "pn=" + pn,
+            success: function (pageInfo) {
+                //构建员工表
+                build_emp_table(pageInfo);
+                //构建分页信息
+                build_paging_info(pageInfo);
+                //构建分页条
+                build_paging_bar(pageInfo)
+            }
+        })
+    }
+
+    //点击模糊查询按钮
+    $("#like_search_btn").click(function () {
+        //1、获取模糊查询输入框中的值,赋值给全局变量likeEmpName
+        likeEmpName = $("#like_search_input").val();
+        //2、发送Ajax请求进行模糊查询,默认查询第一页
+        like_search_to_page(1, likeEmpName);
+    })
+
+    //员工全选与全不选
+    $("#checked_emp_all").click(function () {
+        $(".check_item").prop("checked", $(this).prop("checked"));
+    })
+    //判断选中的长度是否等于总长度，如果等于，则设置checked_emp_all为true，否则为false
+    $(document).on("click", ".check_item", function () {
+        $("#checked_emp_all").prop("checked", $(".check_item:checked").length == $(".check_item").length);
+    });
+</script>
+</body>
+</html>

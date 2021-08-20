@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+            "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <!--数据库驱动-->
+    <!--<classPathEntry location="F:\apache-maven-3.6.3\maven-conf\repository\mysql\mysql-connector-java\8.0.26\mysql-connector-java-8.0.26.jar" />-->
+    <!--配置数据库连接信息-->
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+
+        <commentGenerator>
+            <!--如果生成日期，会造成即便修改一个字段，整个实体所有属性都发生变化，不利于版E制，所有设置为true-->
+            <property name="suppressData" value="true"/>
+            <!--是否去除自动生成的注释 true：是 false：否-->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!--数据库连接信息配置-->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/ssm-crud?charset=utf-8&amp;serverTimezone=UTC"
+                        userId="root"
+                        password="20010101">
+        </jdbcConnection>
+
+        <!--Java类型解析器-->
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!--生成模型的包名和位置-->
+        <javaModelGenerator targetPackage="com.application.bean" targetProject="..\SpringBoot-item01\src\main\java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!--生成映射文件的包名和位置-->
+        <sqlMapGenerator targetPackage="mybatis.mapper"  targetProject="..\SpringBoot-item01\src\main\resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <!--生成DAO的包名和位置-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.application.mapper" targetProject="..\SpringBoot-item01\src\main\java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!--表的生成策略-->
+        <table tableName="administrator" domainObjectName="Administrator"/>
+        <table tableName="employee" domainObjectName="Employee"/>
+        <table tableName="department" domainObjectName="Department"/>
+
+    </context>
+</generatorConfiguration>

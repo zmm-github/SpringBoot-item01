@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.4.0/css/bootstrap.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}">
+    <script type="text/javascript" th:src="@{/webjars/jquery/3.4.1/jquery.js}"></script>
+</head>
+<body>
+<div class="container box">
+    <form class="form-horizontal" action="checkAdministrator" method="post">
+        <div class="form-group">
+            <h3 th:text="#{login.title}">Please Sign in</h3>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4 col-sm-offset-4">
+                <input type="text" th:placeholder="#{login.username}" name="username" class="form-control" placeholder="Username">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-4 col-sm-offset-4">
+                <input type="password" th:placeholder="#{login.password}" name="password" class="form-control" placeholder="Password">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox"> [[#{login.remember}]]
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" th:text="#{login.btn}" class="btn btn-lg btn-primary">Sign in</button>
+        </div>
+        <div class="form-group">
+            <a href="/index.html?l=zh_CN" style="margin-right: 50px; color: white; ">中文</a>
+            <a href="/index.html?l=en_US" style="margin-left: 50px; color: white;">English</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
